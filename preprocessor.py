@@ -2,17 +2,23 @@ import re
 import pandas as pd
 
 def preprocess(data):
-    # This pattern handles both 24-hour and 12-hour (AM/PM) timestamps
-    pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s(?:AM|PM)?\s?-\s'
+    # This pattern handles the specific format with the special space
+    pattern = r'\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s?[ap]m\s?-\s'
+
+    # Replace the special Unicode space with a standard space
+    data = re.sub(r'[\u202f]', ' ', data)
 
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
 
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
 
-    # Use 'coerce' to handle different formats gracefully by returning NaT for parsing failures
-    # Attempting to parse with a flexible format that handles both 12-hour and 24-hour clocks
-    df['message_date'] = pd.to_datetime(df['message_date'], infer_datetime_format=True, errors='coerce')
+    # The format string matches your specific timestamp
+    # Assuming Day/Month format (04/04)
+    df['message_date'] = pd.to_datetime(df['message_date'], format='%d/%m/%y, %I:%M %p - ', errors='coerce')
+
+    # If the above fails, it may be a Month/Day format. Uncomment and try this line instead.
+    # df['message_date'] = pd.to_datetime(df['message_date'], format='%m/%d/%y, %I:%M %p - ', errors='coerce')
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
 
@@ -20,7 +26,7 @@ def preprocess(data):
     messages = []
     for message in df['user_message']:
         entry = re.split(r'([\w\W]+?):\s', message)
-        if entry[1:]:  # user name
+        if entry[1:]:
             users.append(entry[1])
             messages.append(" ".join(entry[2:]))
         else:
