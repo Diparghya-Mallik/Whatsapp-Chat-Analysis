@@ -11,7 +11,6 @@ def fetch_stats(selected_user, df):
         df = df[df['user'] == selected_user]
 
     num_messages = df.shape[0]
-
     words = []
     for message in df['message']:
         words.extend(message.split())
@@ -68,7 +67,7 @@ def most_common_words(selected_user, df):
             if word not in stop_words:
                 words.append(word)
 
-    most_common_df = pd.DataFrame(Counter(words).most_common(20))
+    most_common_df = pd.DataFrame(Counter(words).most_common(20), columns=['Word', 'Count'])
     return most_common_df
 
 def emoji_helper(selected_user, df):
@@ -77,9 +76,10 @@ def emoji_helper(selected_user, df):
 
     emojis = []
     for message in df['message']:
-        emojis.extend([c for c in message if c in emoji.UNICODE_EMOJI])
+        # This is the new, more robust way to find emojis
+        emojis.extend([c for c in message if c in emoji.EMOJI_DATA])
 
-    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
+    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))), columns=['Emoji', 'Count'])
     return emoji_df
 
 def monthly_timeline(selected_user, df):
@@ -101,7 +101,6 @@ def daily_timeline(selected_user, df):
         df = df[df['user'] == selected_user]
 
     daily_timeline = df.groupby('only_date').count()['message'].reset_index()
-
     return daily_timeline
 
 def week_activity_map(selected_user, df):
@@ -121,5 +120,4 @@ def activity_heatmap(selected_user, df):
         df = df[df['user'] == selected_user]
 
     user_heatmap = df.pivot_table(index='day_name', columns='period', values='message', aggfunc='count').fillna(0)
-
     return user_heatmap
