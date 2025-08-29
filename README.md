@@ -1,5 +1,4 @@
 # Whatsapp-Chat-Analysis
-WhatsApp Chat Analyzer
 This project is a powerful and easy-to-use web application that analyzes your WhatsApp chat data. Built with Python and the Streamlit framework, it provides valuable insights and visualizations from your chat history, helping you understand your communication patterns, find your most-used words and emojis, and see who the most active participants are.
 
 You can try the live application here: [Your App's URL Here]
