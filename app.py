@@ -113,7 +113,8 @@ if uploaded_file is not None:
 
     fig, ax = plt.subplots()
 
-    ax.barh(most_common_df[0], most_common_df[1])
+    # Corrected: Use column names 'Word' and 'Count'
+    ax.barh(most_common_df['Word'], most_common_df['Count'])
     plt.xticks(rotation='vertical')
 
     st.title('Most common words')
@@ -129,5 +130,6 @@ if uploaded_file is not None:
         st.dataframe(emoji_df)
     with col2:
         fig, ax = plt.subplots()
-        ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+        # Corrected: Use column names 'Emoji' and 'Count'
+        ax.pie(emoji_df['Count'].head(), labels=emoji_df['Emoji'].head(), autopct="%0.2f")
         st.pyplot(fig)
